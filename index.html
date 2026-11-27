@@ -106,20 +106,45 @@ p{text-wrap:pretty}
    tanpa bingkai berdiri di tengah, dan nama raksasa melebar sampai terpotong tepi
    layar, duduk rendah menimpa foto. Nama memakai mix-blend-mode:difference —
    hitam di atas krem, berbalik putih/krem saat menimpa foto, seperti huruf
-   "ANGGA" pada referensi. Zona cover selalu terang, di kedua tema. */
+   "ANGGA" pada referensi. Zona cover selalu terang, di kedua tema.
+   Animasi cover (jalan otomatis, termasuk di HP — tanpa perlu disentuh):
+   pil navigasi meluncur turun, foto naik masuk lalu melayang pelan terus-menerus,
+   huruf nama muncul satu-satu dari bawah lalu bergeser menyamping tanpa henti,
+   dan foto + nama bergerak parallax berlawanan arah saat halaman digeser. */
 .cover{background:#F4F1EA;color:#141416;overflow:clip}
-.cover-stage{position:relative;height:clamp(430px,88svh,740px);height:clamp(430px,min(88svh,135vw),740px);overflow:clip}
-.cover-photo{position:absolute;left:50%;bottom:0;transform:translateX(-50%);height:100%;margin:0;z-index:1}
-.cover-photo img{height:100%;width:auto;max-width:none;display:block;image-rendering:pixelated}
-.cover-name{position:absolute;z-index:2;left:50%;bottom:clamp(4px,3%,24px);transform:translateX(-50%);font-size:clamp(100px,31vw,470px);font-weight:900;letter-spacing:-.03em;line-height:.8;white-space:nowrap;margin:0;color:#101012;pointer-events:none}
+.cover-stage{position:relative;height:clamp(430px,88svh,740px);height:clamp(430px,min(88svh,135vw),740px);overflow:clip;isolation:isolate}
+.topbar{animation:barDrop .7s cubic-bezier(.22,.9,.3,1) both}
+@keyframes barDrop{from{transform:translateY(-110%);opacity:0}to{transform:translateY(0);opacity:1}}
+.cover-photo{position:absolute;left:50%;bottom:0;transform:translateX(-50%);height:100%;margin:0;z-index:1;animation:photoIn 1.05s cubic-bezier(.22,.9,.28,1) .15s both;will-change:transform}
+@keyframes photoIn{from{transform:translateX(-50%) translateY(64px) scale(.965);opacity:0}to{transform:translateX(-50%) translateY(0) scale(1);opacity:1}}
+/* tepi kotak foto dibaurkan ke krem supaya foto menyatu dengan latar seperti potongan gambar referensi */
+.cover-photo::after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 34px 0 38px -18px #F4F1EA,inset -34px 0 38px -18px #F4F1EA,inset 0 30px 34px -16px #F4F1EA}
+.cover-photo img{height:100%;width:auto;max-width:none;display:block;image-rendering:pixelated;animation:photoFloat 7s ease-in-out 1.4s infinite;will-change:transform}
+@keyframes photoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-11px)}}
+.cover-name{position:absolute;z-index:2;left:50%;bottom:clamp(4px,3%,24px);transform:translateX(-50%);font-size:clamp(100px,31vw,470px);font-weight:900;letter-spacing:-.03em;line-height:.8;white-space:nowrap;margin:0;color:#101012;pointer-events:none;animation:nameDrift 11s ease-in-out 1.6s infinite alternate both;will-change:transform}
+@keyframes nameDrift{from{transform:translateX(-51.6%)}to{transform:translateX(-48.4%)}}
+.cover-name span{display:inline-block;animation:nameRise .85s cubic-bezier(.2,.85,.25,1) both}
+.cover-name span:nth-child(1){animation-delay:.45s}
+.cover-name span:nth-child(2){animation-delay:.55s}
+.cover-name span:nth-child(3){animation-delay:.65s}
+.cover-name span:nth-child(4){animation-delay:.75s}
+.cover-name span:nth-child(5){animation-delay:.85s}
+.cover-name span:nth-child(6){animation-delay:.95s}
+@keyframes nameRise{from{transform:translateY(112%);opacity:0}to{transform:translateY(0);opacity:1}}
 @supports (mix-blend-mode:difference){
   .cover-name{color:#FFFFFF;mix-blend-mode:difference}
 }
 .cover-meta{display:flex;flex-wrap:wrap;gap:8px 26px;align-items:center;justify-content:space-between;border-top:1px solid rgba(16,16,18,.16);padding:18px 0 20px}
+.cover-meta>*{animation:metaUp .7s ease both}
+.cover-meta>*:nth-child(1){animation-delay:1.05s}
+.cover-meta>*:nth-child(2){animation-delay:1.18s}
+.cover-meta>*:nth-child(3){animation-delay:1.31s}
+@keyframes metaUp{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
 .cover-meta .cm{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(16,16,18,.55)}
 .cover-scroll{display:inline-flex;align-items:center;gap:9px;text-decoration:none;font-weight:700;font-size:14.5px;color:#101012;min-height:44px}
 .cover-scroll:hover{text-decoration:underline;text-underline-offset:4px}
-.cover-scroll svg{width:17px;height:17px;flex:none}
+.cover-scroll svg{width:17px;height:17px;flex:none;animation:cueBounce 1.8s ease-in-out 2s infinite}
+@keyframes cueBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
 section[id],.hero[id]{scroll-margin-top:128px}
 
 /* ---------- hero ---------- */
@@ -317,12 +342,18 @@ footer{margin-top:100px;border-top:1px solid var(--line);background:var(--bg-2)}
 /* reveal */
 .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
 .reveal.in{opacity:1;transform:none}
+.featured .proj.reveal:nth-child(2n){transition-delay:.08s}
+.featured .proj.reveal:nth-child(3n){transition-delay:.14s}
+.steps .step.reveal:nth-child(2){transition-delay:.08s}
+.steps .step.reveal:nth-child(3){transition-delay:.16s}
+.steps .step.reveal:nth-child(4){transition-delay:.24s}
 @media (prefers-reduced-motion: reduce){
   html{scroll-behavior:auto}
   .marquee-track{animation:none;flex-wrap:wrap;width:auto}
   .typewriter .caret{animation:none}
   .reveal{opacity:1;transform:none;transition:none}
   .faq-q .fx{transition:none}
+  .topbar,.cover-photo,.cover-photo img,.cover-name,.cover-name span,.cover-meta>*,.cover-scroll svg{animation:none}
 }
 </style>
 </head>
@@ -358,7 +389,7 @@ footer{margin-top:100px;border-top:1px solid var(--line);background:var(--bg-2)}
       <figure class="cover-photo">
         <img src="data:image/jpeg;base64,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" alt="Foto profil X (Twitter) 0xZep0 — avatar pixel-art" width="311" height="311" />
       </figure>
-      <p class="cover-name" aria-hidden="true">0xZep0</p>
+      <p class="cover-name" id="coverName" aria-hidden="true"><span>0</span><span>x</span><span>Z</span><span>e</span><span>p</span><span>0</span></p>
     </div>
     <div class="wrap">
       <div class="cover-meta">
@@ -399,7 +430,7 @@ footer{margin-top:100px;border-top:1px solid var(--line);background:var(--bg-2)}
         </div>
       </div>
 
-      <div class="hero-stats" aria-label="Angka ringkas">
+      <div class="hero-stats reveal" aria-label="Angka ringkas">
         <div class="hstat"><div class="v num">25</div><div class="k">Repositori publik di GitHub</div></div>
         <div class="hstat"><div class="v num">11</div><div class="k">Karya pilihan yang ditampilkan</div></div>
         <div class="hstat"><div class="v num">9</div><div class="k">Edisi editorial harian “In Full”</div></div>
@@ -431,7 +462,7 @@ footer{margin-top:100px;border-top:1px solid var(--line);background:var(--bg-2)}
       </div>
 
       <div class="featured" id="featuredGrid">
-        <article class="proj proj-wide" data-cat="game">
+        <article class="proj proj-wide reveal" data-cat="game">
           <div class="proj-visual v2"><span class="pv-chip">01 · Game</span><span class="pv-live"><i></i>TERBARU</span><span class="pv-glyph">RR</span></div>
           <div class="proj-body">
             <p class="proj-meta">Game · JavaScript · Bounty make.fun</p>
@@ -444,7 +475,7 @@ footer{margin-top:100px;border-top:1px solid var(--line);background:var(--bg-2)}
           </div>
         </article>
 
-        <article class="proj" data-cat="game">
+        <article class="proj reveal" data-cat="game">
           <div class="proj-visual v1"><span class="pv-chip">02 · Game</span><span class="pv-glyph">PV</span></div>
           <div class="proj-body">
             <p class="proj-meta">Game · Three.js · Bounty make.fun $1.666</p>
@@ -457,7 +488,7 @@ footer{margin-top:100px;border-top:1px solid var(--line);background:var(--bg-2)}
           </div>
         </article>
 
-        <article class="proj" data-cat="tools">
+        <article class="proj reveal" data-cat="tools">
           <div class="proj-visual v3"><span class="pv-chip">03 · Tools</span><span class="pv-glyph">GH</span></div>
           <div class="proj-body">
             <p class="proj-meta">Tools · Go / Node 22 · Bounty make.fun $500</p>
@@ -470,7 +501,7 @@ footer{margin-top:100px;border-top:1px solid var(--line);background:var(--bg-2)}
           </div>
         </article>
 
-        <article class="proj" data-cat="web3">
+        <article class="proj reveal" data-cat="web3">
           <div class="proj-visual v4"><span class="pv-chip">04 · Web3</span><span class="pv-glyph">ZK</span></div>
           <div class="proj-body">
             <p class="proj-meta">Web3 · JavaScript · zkVerify Agent Games</p>
@@ -483,7 +514,7 @@ footer{margin-top:100px;border-top:1px solid var(--line);background:var(--bg-2)}
           </div>
         </article>
 
-        <article class="proj" data-cat="web3">
+        <article class="proj reveal" data-cat="web3">
           <div class="proj-visual v2"><span class="pv-chip">05 · Web3</span><span class="pv-glyph">TR</span></div>
           <div class="proj-body">
             <p class="proj-meta">Web3 · JavaScript · Bounty make.fun</p>
@@ -496,7 +527,7 @@ footer{margin-top:100px;border-top:1px solid var(--line);background:var(--bg-2)}
           </div>
         </article>
 
-        <article class="proj" data-cat="game">
+        <article class="proj reveal" data-cat="game">
           <div class="proj-visual v1"><span class="pv-chip">06 · Game</span><span class="pv-glyph">DW</span></div>
           <div class="proj-body">
             <p class="proj-meta">Game · Three.js · Bounty make.fun</p>
@@ -509,7 +540,7 @@ footer{margin-top:100px;border-top:1px solid var(--line);background:var(--bg-2)}
           </div>
         </article>
 
-        <article class="proj" data-cat="game">
+        <article class="proj reveal" data-cat="game">
           <div class="proj-visual v5"><span class="pv-chip">07 · Game</span><span class="pv-glyph">4K</span></div>
           <div class="proj-body">
             <p class="proj-meta">Game · Python · Bounty make.fun</p>
@@ -522,7 +553,7 @@ footer{margin-top:100px;border-top:1px solid var(--line);background:var(--bg-2)}
           </div>
         </article>
 
-        <article class="proj" data-cat="game">
+        <article class="proj reveal" data-cat="game">
           <div class="proj-visual v4"><span class="pv-chip">08 · Game</span><span class="pv-glyph">LL</span></div>
           <div class="proj-body">
             <p class="proj-meta">Game · JavaScript · Deep check lolos</p>
@@ -535,7 +566,7 @@ footer{margin-top:100px;border-top:1px solid var(--line);background:var(--bg-2)}
           </div>
         </article>
 
-        <article class="proj" data-cat="tools">
+        <article class="proj reveal" data-cat="tools">
           <div class="proj-visual v3"><span class="pv-chip">09 · Tools</span><span class="pv-glyph">TF</span></div>
           <div class="proj-body">
             <p class="proj-meta">Tools · Python · Bounty make.fun $250</p>
@@ -548,7 +579,7 @@ footer{margin-top:100px;border-top:1px solid var(--line);background:var(--bg-2)}
           </div>
         </article>
 
-        <article class="proj" data-cat="kreatif">
+        <article class="proj reveal" data-cat="kreatif">
           <div class="proj-visual v2"><span class="pv-chip">10 · Kreatif</span><span class="pv-glyph">NC</span></div>
           <div class="proj-body">
             <p class="proj-meta">Kreatif · JavaScript · Bounty make.fun $250</p>
@@ -561,7 +592,7 @@ footer{margin-top:100px;border-top:1px solid var(--line);background:var(--bg-2)}
           </div>
         </article>
 
-        <article class="proj" data-cat="tools">
+        <article class="proj reveal" data-cat="tools">
           <div class="proj-visual v1"><span class="pv-chip">11 · Tools</span><span class="pv-glyph">AI</span></div>
           <div class="proj-body">
             <p class="proj-meta">Tools · Node 22 · Bounty make.fun</p>
@@ -586,7 +617,7 @@ footer{margin-top:100px;border-top:1px solid var(--line);background:var(--bg-2)}
         <h2 id="seri-h">Satu hari penuh, satu halaman.</h2>
         <p class="lede">Seri “In Full”: satu gambar merangkum berita dunia satu hari penuh — diproduksi setiap hari untuk bounty news-image make.fun, masing-masing sebagai repositori Python tersendiri. Sudut khasnya: siang tropis yang terik, bayangan keras, aksen merah — “Sunlit Crime-Noir”.</p>
       </div>
-      <div class="infull">
+      <div class="infull reveal">
         <div class="edition">
           <span class="date num">26 Nov 2026</span>
           <div><div class="t">THURSDAY, IN FULL</div><div class="d">46 cerita terverifikasi + 4 angka kunci, sudut Sunlit Crime-Noir, self-audit lolos. Selesai dibangun hari ini.</div></div>
@@ -643,7 +674,7 @@ footer{margin-top:100px;border-top:1px solid var(--line);background:var(--bg-2)}
       <div class="sec-head reveal">
         <h2 id="bidang-h">Empat bidang, satu standar: terverifikasi.</h2>
       </div>
-      <div class="fields">
+      <div class="fields reveal">
         <div class="field-row">
           <div><h3>Riset Web3 &amp; Airdrop</h3><p class="sub">SCAN HARIAN · MAKS 3 TEMUAN / HARI</p></div>
           <p class="desc">Pemindaian harian peluang airdrop dan mint gratis yang bisa dikerjakan dari HP: tanpa deposit, tanpa seed phrase dibagikan, hanya temuan yang lolos verifikasi.</p>
@@ -676,10 +707,10 @@ footer{margin-top:100px;border-top:1px solid var(--line);background:var(--bg-2)}
         <h2 id="cara-h">Dari temuan sampai terkirim.</h2>
       </div>
       <div class="steps">
-        <div class="step"><div class="no">01</div><h3>Verifikasi</h3><p>Kontrak terverifikasi, simulasi dua RPC, tanpa approve tersembunyi. Yang tidak lolos, tidak disentuh.</p></div>
-        <div class="step"><div class="no">02</div><h3>Benchmark</h3><p>Pelajari papan atas lomba atau pasar dulu — konsep ditajamkan menyerang kelemahan spesifik mereka.</p></div>
-        <div class="step"><div class="no">03</div><h3>Bangun</h3><p>Dikerjakan bersama asisten AI Muse dari HP Android, sebagai repositori publik satu commit bersih.</p></div>
-        <div class="step"><div class="no">04</div><h3>Self-audit &amp; kirim</h3><p>Audit penuh sebelum submit: gerbang kualitas dulu, baru kirim — lengkap dengan transkrip dan run record.</p></div>
+        <div class="step reveal"><div class="no">01</div><h3>Verifikasi</h3><p>Kontrak terverifikasi, simulasi dua RPC, tanpa approve tersembunyi. Yang tidak lolos, tidak disentuh.</p></div>
+        <div class="step reveal"><div class="no">02</div><h3>Benchmark</h3><p>Pelajari papan atas lomba atau pasar dulu — konsep ditajamkan menyerang kelemahan spesifik mereka.</p></div>
+        <div class="step reveal"><div class="no">03</div><h3>Bangun</h3><p>Dikerjakan bersama asisten AI Muse dari HP Android, sebagai repositori publik satu commit bersih.</p></div>
+        <div class="step reveal"><div class="no">04</div><h3>Self-audit &amp; kirim</h3><p>Audit penuh sebelum submit: gerbang kualitas dulu, baru kirim — lengkap dengan transkrip dan run record.</p></div>
       </div>
     </div>
   </section>
@@ -697,7 +728,7 @@ footer{margin-top:100px;border-top:1px solid var(--line);background:var(--bg-2)}
         <input id="repoSearch" type="search" placeholder="Ketik nama, bahasa, atau kata kunci…" autocomplete="off" />
         <span class="search-count" id="repoCount" role="status"></span>
       </div>
-      <div class="repo-box">
+      <div class="repo-box reveal">
         <table class="repo-table">
           <thead><tr><th scope="col">Repositori</th><th scope="col">Bahasa</th><th scope="col">Diperbarui</th></tr></thead>
           <tbody id="repoBody"></tbody>
@@ -717,7 +748,7 @@ footer{margin-top:100px;border-top:1px solid var(--line);background:var(--bg-2)}
       <p class="about-lede" style="margin-top:34px">Saya <b>0xZep0</b> — nama yang sama di GitHub dan X. Bekerja dari HP Android, beroperasi penuh di Web3: berburu peluang gratis yang terverifikasi, mengaudit kontrak sebelum menyentuhnya, dan mengirim karya nyata ke repositori publik.</p>
       <p class="about-small">Prinsip kerjanya sederhana dan konsisten: verifikasi dulu (kontrak terverifikasi, simulasi dua RPC, tanpa approve tersembunyi), jangan pernah membayar untuk jalur yang seharusnya gratis, dan setiap klaim harus bisa ditunjukkan buktinya — on-chain atau di GitHub. Sebagian besar karya November 2026 di halaman ini dibangun bersama asisten AI Muse untuk bounty make.fun, dengan gerbang kualitas: benchmark papan atas dulu, self-audit penuh, baru kirim.</p>
 
-      <div class="facts">
+      <div class="facts reveal">
         <p class="facts-title">Fakta kunci</p>
         <div class="facts-grid">
           <div class="fact"><p class="fk">Siapa</p><p class="fv">0xZep0 — penjelajah Web3 &amp; pembangun bounty; GitHub: 0xZep0</p></div>
@@ -731,7 +762,7 @@ footer{margin-top:100px;border-top:1px solid var(--line);background:var(--bg-2)}
         </div>
       </div>
 
-      <div class="wallet-card">
+      <div class="wallet-card reveal">
         <h3>Wallet publik</h3>
         <p class="wsub">Alamat yang memang dipublikasikan 0xZep0 untuk aktivitas agen dan artikel — salin bila perlu memverifikasi aktivitas on-chain-nya.</p>
         <div class="wallet-row">
@@ -966,6 +997,37 @@ footer{margin-top:100px;border-top:1px solid var(--line);background:var(--bg-2)}
     revealEls.forEach(function(el){ io.observe(el); });
   } else {
     revealEls.forEach(function(el){ el.classList.add('in'); });
+  }
+
+  /* ---------- cover parallax (properti translate terpisah, tidak menabrak animasi CSS) ---------- */
+  var coverStage=document.querySelector('.cover-stage');
+  var coverPhoto=document.querySelector('.cover-photo');
+  var coverName=document.getElementById('coverName');
+  if(coverStage && coverPhoto && coverName && !reduced){
+    var parTick=false;
+    function applyParallax(){
+      parTick=false;
+      var y=window.scrollY||window.pageYOffset||0;
+      var h=coverStage.offsetTop+coverStage.offsetHeight;
+      if(y<h+80){
+        coverPhoto.style.translate='0px '+(y*0.10).toFixed(1)+'px';
+        coverName.style.translate='0px '+(-y*0.16).toFixed(1)+'px';
+      }
+    }
+    window.addEventListener('scroll',function(){
+      if(!parTick){ parTick=true; requestAnimationFrame(applyParallax); }
+    },{passive:true});
+    coverStage.addEventListener('pointermove',function(e){
+      var r=coverStage.getBoundingClientRect();
+      var nx=(e.clientX-r.left)/r.width-0.5, ny=(e.clientY-r.top)/r.height-0.5;
+      coverPhoto.style.transform='';
+      coverName.style.marginLeft=(nx*-14).toFixed(1)+'px';
+      coverPhoto.style.marginLeft=(nx*10).toFixed(1)+'px';
+      coverPhoto.style.marginTop=(ny*6).toFixed(1)+'px';
+    });
+    coverStage.addEventListener('pointerleave',function(){
+      coverName.style.marginLeft='0px'; coverPhoto.style.marginLeft='0px'; coverPhoto.style.marginTop='0px';
+    });
   }
 
   /* ---------- featured filter ---------- */
